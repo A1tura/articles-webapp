@@ -1,13 +1,17 @@
 import { ObjectId } from "mongodb";
 
+import * as types from "../types/user.types";
+
 export interface UserDb {
     _id: ObjectId;
-    username: string;
-    passwordHash: passwordHash;
+    username: types.username;
+    email: types.email;
+    passwordHash: types.passwordHash;
     createdAt: Date;
 }
 
 export interface User {
-    username: string;
-    passwordHash: passwordHash;
+    username: types.username;
+    passwordHash: types.passwordHash;
+    email: types.email;
 }
