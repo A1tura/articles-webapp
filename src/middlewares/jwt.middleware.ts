@@ -20,7 +20,11 @@ export default function verificateJWT(req: Request, res: Response, next: NextFun
         // refactor
         const decoded = jsonwebtoken.verify(token[1], process.env["JWT_SECRET"] || "ff");
 
-        req.user = decoded;
+        if (typeof decoded === "object" && "username" in decoded) {
+            req.user = decoded.username;
+        } else {
+            return res.json({success: false, errors: ["Auth failure: Invalid JWT token"]}).status(401);
+        }
     } catch (err) {
         return res.json({success: false, errors: err}).status(401);
     }
