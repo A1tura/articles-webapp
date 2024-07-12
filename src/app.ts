@@ -2,6 +2,7 @@ import express, { Application } from "express";
 
 import testRoute from "./routes/test.route";
 import userRoute from "./routes/user.route";
+import articleRoute from "./routes/article.route"
 
 function buildApp(): Application {
     const app = express();
@@ -11,6 +12,7 @@ function buildApp(): Application {
     // register routes
     app.use("/test", testRoute);
     app.use("/user", userRoute);
+    app.use("/articles", articleRoute)
 
     return app;
 }

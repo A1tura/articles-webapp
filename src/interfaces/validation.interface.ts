@@ -3,3 +3,10 @@ export interface signupErrors {
     username?: string[];
     email?: string[];
 }
+
+export interface articleErrors {
+    title?: string[];
+    category?: string[];
+    tags?: string[];
+    text: string[];
+}
