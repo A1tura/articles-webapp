@@ -148,3 +148,21 @@ export const signin = async (req: Request, res: Response): Promise<Response> => 
         return res.json({success: false, errors});
     }
 }
+
+export const profile = async (req: Request, res: Response): Promise<Response> => {
+    if (req.user) {
+        const user = await getUser(req.user);
+
+        if (user) {
+            return res.json({success: true, user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                createdAt: user.createdAt,
+                emailVerificated: user.emailVerificated
+            }})
+        }
+        return res.json({success: false})
+    } 
+    return res.json({success: false})
+}
