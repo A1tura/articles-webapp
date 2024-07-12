@@ -7,6 +7,11 @@ import { User } from "../interfaces/user.interface";
 
 import hashPassword from "../utils/hashPassword";
 import { validateEmail, validateUsername } from "../validation/user.validation";
+import sendEmail from "../utils/sendEmail";
+
+import crypto from "crypto";
+import createToken from "../utils/createToken";
+import {createToken as createTokenDb, isValidEmailToken, verificateEmailToken} from "../dal/verification.dal";
 
 const schema = new PasswordValidator();
 
@@ -26,8 +31,11 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
     const User: User = {
         username,
         passwordHash: hashPassword(password),
-        email
+        email,
+        emailVerificated: false,
     }
+
+    const verifToken: string = createToken(50);
 
     const validator = schema.validate(password);
 
@@ -76,7 +84,7 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
         const emailErrors = validateEmail(email);
 
         for (let i = 0; i < emailErrors.length; i++) {
-            if (errors.email === undefined) {
+            if (!errors.email) {
                 errors.email = [emailErrors[i]];
             } else {
                 errors.email.push(emailErrors[i]);
@@ -87,8 +95,27 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
 
     if (Object.keys(errors).length === 0) {
         createUser(User);
+        createTokenDb(username, verifToken);
+        await sendEmail(email, `Verificate your email: http://localhost:3000/user/verifEmail/${verifToken}`);
         return res.json({success: true});
     }  else {
         return res.json({success: false, errorFields: Object.keys(errors), error: errors});
+    }
+}
+
+export const verifEmail = async (req: Request, res: Response): Promise<Response> => {
+    const {token} = req.params;
+
+    const errors: string[] = [];
+
+    if (!(await isValidEmailToken(token))) {
+        errors.push("Invalid token");
+    }
+
+    if (errors.length > 0) {
+        return res.json({success: false, errors});
+    } else {
+        verificateEmailToken(token);
+        return res.json({success: true})
     }
 }
