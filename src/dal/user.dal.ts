@@ -36,3 +36,10 @@ export const emailInUsage = async (email: types.email): Promise<boolean> => {
 export const verificateUserEmail = async (username: types.username): Promise<void> => {
     getCollection().updateOne({username}, {$set: {emailVerificated: true}});
 }
+
+export const getUser = async (username: types.username): Promise<UserDb | null> => {
+    
+    const document = await getCollection().findOne<UserDb>({username});
+
+    return document;
+}

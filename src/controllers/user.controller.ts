@@ -1,8 +1,10 @@
-import { Request, Response } from "express";
+import { json, Request, Response } from "express";
+
+import dotenv from "dotenv";
 
 import PasswordValidator from "password-validator";
-import { Errors } from "../interfaces/validation.interface";
-import { createUser, emailInUsage, usernameInUsage } from "../dal/user.dal";
+import { signupErrors } from "../interfaces/validation.interface";
+import { createUser, emailInUsage, getUser, usernameInUsage } from "../dal/user.dal";
 import { User } from "../interfaces/user.interface";
 
 import hashPassword from "../utils/hashPassword";
@@ -12,6 +14,9 @@ import sendEmail from "../utils/sendEmail";
 import createToken from "../utils/createToken";
 import {createToken as createTokenDb, isValidEmailToken, verificateEmailToken} from "../dal/verification.dal";
 
+import jsonwebtoken from "jsonwebtoken";
+
+dotenv.config({path: "../.env"});
 const schema = new PasswordValidator();
 
 schema
@@ -38,7 +43,7 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
 
     const validator = schema.validate(password);
 
-    let errors: Errors = {};
+    let errors: signupErrors = {};
 
 
     if (!validator) {
@@ -116,5 +121,30 @@ export const verifEmail = async (req: Request, res: Response): Promise<Response>
     } else {
         verificateEmailToken(token);
         return res.json({success: true})
+    }
+}
+
+export const signin = async (req: Request, res: Response): Promise<Response> => {
+    const {username, password} = req.body;
+
+    const errors: string[] = [];
+
+    const passwordHash = hashPassword(password);
+    const user = await getUser(username);
+
+    if (user) {
+        if (user.passwordHash != passwordHash) {
+            errors.push("Invalid password or username");
+        } 
+    } else {
+        errors.push("Invalid password or username");
+    }
+
+    if (errors.length === 0) {
+        // refactor
+        const jwt: string = jsonwebtoken.sign({username}, process.env["JWT_SECRET"] || "ff", {expiresIn: (60 * 60) * 3});
+        return res.json({success: true, jwt});
+    } else {
+        return res.json({success: false, errors});
     }
 }
