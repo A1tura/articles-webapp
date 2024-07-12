@@ -26,7 +26,7 @@ export default function verificateJWT(req: Request, res: Response, next: NextFun
             return res.json({success: false, errors: ["Auth failure: Invalid JWT token"]}).status(401);
         }
     } catch (err) {
-        return res.json({success: false, errors: err}).status(401);
+        return res.json({success: false, err}).status(401);
     }
 
     next();
