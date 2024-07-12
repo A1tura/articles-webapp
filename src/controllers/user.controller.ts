@@ -48,14 +48,14 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
         }
     }
 
-    if (await usernameInUsage(username)) {
+    if (await usernameInUsage(username) === true) {
         if (!errors.username) {
             errors.username = ["Username already in use!"];
         } else {
             errors.username.push("Username already in use!");
         }
-    } else if (validateUsername(username).length != 0) {
-        const usernameErrors = validateUsername(email);
+    }  else if (validateUsername(username).length > 0) {
+        const usernameErrors = validateUsername(username);
 
         for (let i = 0; i < usernameErrors.length; i++) {
             if (!errors.username) {
@@ -63,8 +63,8 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
             } else {
                 errors.username.push(usernameErrors[i]);
             }
-        }
-    } 
+        }    
+    }
 
     if (await emailInUsage(email)) {
         if (!errors.email) {
@@ -74,8 +74,9 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
         }
     } else if (validateEmail(email).length != 0) {
         const emailErrors = validateEmail(email);
-        for (let i = 0; emailErrors.length; i++) {
-            if (!errors.email) {
+
+        for (let i = 0; i < emailErrors.length; i++) {
+            if (errors.email === undefined) {
                 errors.email = [emailErrors[i]];
             } else {
                 errors.email.push(emailErrors[i]);
