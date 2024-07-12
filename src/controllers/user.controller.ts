@@ -9,7 +9,6 @@ import hashPassword from "../utils/hashPassword";
 import { validateEmail, validateUsername } from "../validation/user.validation";
 import sendEmail from "../utils/sendEmail";
 
-import crypto from "crypto";
 import createToken from "../utils/createToken";
 import {createToken as createTokenDb, isValidEmailToken, verificateEmailToken} from "../dal/verification.dal";
 
