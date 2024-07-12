@@ -7,7 +7,7 @@ const getCollection = (): Collection => db.collection("users");
 
 export const createUser = async (user: User): Promise<void> => {
     try {
-        const document = await getCollection().insertOne({user, createdAt: new Date()})
+        const document = await getCollection().insertOne({...user, createdAt: new Date()})
     } catch (err) {
         console.log(err)
     }
