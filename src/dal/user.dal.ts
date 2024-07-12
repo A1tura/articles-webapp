@@ -1,6 +1,6 @@
 import { Collection } from "mongodb";
 import {db} from "../db/db";
-import { User } from "../interfaces/user.interface";
+import { User, UserDb } from "../interfaces/user.interface";
 import * as types from "../types/user.types"
 
 const getCollection = (): Collection => db.collection("users");
@@ -31,4 +31,8 @@ export const emailInUsage = async (email: types.email): Promise<boolean> => {
     }
 
      return true;
+}
+
+export const verificateUserEmail = async (username: types.username): Promise<void> => {
+    getCollection().updateOne({username}, {$set: {emailVerificated: true}});
 }
