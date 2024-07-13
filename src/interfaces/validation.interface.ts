@@ -4,9 +4,14 @@ export interface signupErrors {
     email?: string[];
 }
 
+interface tagErrors {
+    tag: string;
+    errors: string[]
+}
+
 export interface articleErrors {
     title?: string[];
     category?: string[];
-    tags?: string[];
-    text: string[];
+    tags?: any;
+    text?: string[];
 }
