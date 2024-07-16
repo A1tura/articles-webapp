@@ -4,7 +4,8 @@ import { articleErrors } from "../interfaces/validation.interface";
 import { createTag, getTag } from "../dal/tags.dal";
 import { Article } from "../interfaces/article.interface";
 import { removeExtraSpaces } from "../utils/articleFormatter";
-import { getCategory } from "../dal/category.dal";
+import { getCategoryByTitle } from "../dal/category.dal";
+import { createArticle as createArticleDB, getArticles as getArticlesDB } from "../dal/articles.dal";
 
 export const test = (req: Request, res: Response): Response => {
     return res.json({success: true});
@@ -32,9 +33,7 @@ export const createArticle = async (req: Request, res: Response): Promise<Respon
     const validatedTitle = validateTitle(title);
     const validatedText = validateText(text);
 
-    const categoryDB = await getCategory(category);
-
-    console.log(categoryDB)
+    const categoryDB = await getCategoryByTitle(category);
 
     if (tags != undefined) {
         for (let i = 0; i < tags.length; i++) {
@@ -58,7 +57,7 @@ export const createArticle = async (req: Request, res: Response): Promise<Respon
     }
 
 
-    if (categoryDB === null) {
+    if (!categoryDB) {
         if (!errors.category) {
             errors.category = ["Category do not exist."];
         } else {
@@ -71,6 +70,14 @@ export const createArticle = async (req: Request, res: Response): Promise<Respon
     if (Object.keys(errors).length > 0) {
         return res.json({success: false, fields: Object.keys(errors), errors});
     } else {
+
+        createArticleDB(article, text);
+        
         return res.json({success: true});
     }
+}
+
+export const getArticles = async (req: Request, res: Response): Promise<Response> => {
+
+    return res.json({success: true, result: await getArticlesDB()});
 }
