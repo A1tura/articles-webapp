@@ -15,3 +15,8 @@ export interface articleErrors {
     tags?: any;
     text?: string[];
 }
+
+export interface categoryErrors {
+    title?: string[];
+    fields?: string[];
+}

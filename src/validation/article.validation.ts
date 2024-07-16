@@ -42,3 +42,15 @@ export const validateText = (text: string): string[] => {
 
     return errors;
 }
+
+export const validateCategory = (category: types.category): string[] => {
+    const errors: string[] = [];
+
+        if (category.length < 2) {
+            errors.push("Category title must be at least 2 symbols.")
+        } else if (category.length > 30) {
+            errors.push("Category title  cannot be more than 30 symbols.");
+        }
+
+    return errors;
+}
